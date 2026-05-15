@@ -1073,12 +1073,6 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
     )
     mask_all: bpy.props.BoolProperty()
 
-    def __init__(self, context):
-        try:
-            self.grp_prop = None
-
-        except ReferenceError:
-            pass
     @classmethod
     def poll(cls, context):
         return True
@@ -1086,7 +1080,6 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
     def invoke(self, context, event):
         faceit_objects = futils.get_faceit_objects_list()
         grps = vg_utils.get_vertex_groups_from_objects(faceit_objects)
-        self.grp_prop = context.scene.faceit_vertex_groups.get(self.vgroup_name)
         if self.vgroup_name in grps:
             return self.execute(context)
         else:
@@ -1095,6 +1088,10 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
             return {'CANCELLED'}
 
     def execute(self, context):
+        grp_prop = context.scene.faceit_vertex_groups.get(self.vgroup_name)
+        if grp_prop is None:
+            self.report({'WARNING'}, f"Unknown Faceit vertex group {self.vgroup_name}")
+            return {'CANCELLED'}
         mode_save = futils.get_object_mode_from_context_mode(context.mode)
         if mode_save != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -1139,21 +1136,21 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
                     mod.vertex_group = vgroup_mask_name
                     mod.show_in_editmode = True
                     mod.show_on_cage = True
-                    mod.invert_vertex_group = self.grp_prop.mask_inverted
+                    mod.invert_vertex_group = grp_prop.mask_inverted
                     mod.show_viewport = True
                 elif self.operation == 'INVERT':
                     if mod:
-                        mod.invert_vertex_group = not self.grp_prop.mask_inverted
+                        mod.invert_vertex_group = not grp_prop.mask_inverted
         if mode_save != 'OBJECT':
             bpy.ops.object.mode_set(mode=mode_save)
 
         if self.operation == 'ADD':
-            self.grp_prop.is_masked = True
+            grp_prop.is_masked = True
         elif self.operation == 'REMOVE':
-            self.grp_prop.is_masked = False
+            grp_prop.is_masked = False
             # self.grp_prop.mask_inverted = False
         elif self.operation == 'INVERT':
-            self.grp_prop.mask_inverted = not self.grp_prop.mask_inverted
+            grp_prop.mask_inverted = not grp_prop.mask_inverted
         return {'FINISHED'}
 
 

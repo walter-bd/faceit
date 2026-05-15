@@ -124,6 +124,38 @@ def update_procedural_eyeblinks(self, context) -> None:
     self.procedural = 'EYEBLINKS' if self.procedural_eyeblinks else 'NONE'
 
 
+def _show_all_armature_layers(rig):
+    armature = rig.data
+    if hasattr(armature, "layers"):
+        layer_state = armature.layers[:]
+        for i, _ in enumerate(armature.layers):
+            armature.layers[i] = True
+        return ("layers", layer_state)
+    collections = getattr(armature, "collections_all", ())
+    state = {collection.name: collection.is_visible for collection in collections}
+    for collection in collections:
+        collection.is_visible = True
+    return ("collections", state)
+
+
+def _restore_armature_layers(rig, state):
+    state_type, state_value = state
+    armature = rig.data
+    if state_type == "layers" and hasattr(armature, "layers"):
+        armature.layers = state_value[:]
+    elif state_type == "collections":
+        for collection in getattr(armature, "collections_all", ()):
+            if collection.name in state_value:
+                collection.is_visible = state_value[collection.name]
+
+
+def _is_faceit_primary_bone_layer(bone):
+    if hasattr(bone, "layers"):
+        layers = bone.layers
+        return layers[0] or layers[1] or layers[2]
+    return True
+
+
 class FACEIT_OT_AddExpressionItem(bpy.types.Operator):
     '''Add a new Expression to the expression list and action'''
     bl_idname = "faceit.add_expression_item"
@@ -612,16 +644,22 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
         default=False,
         options={'SKIP_SAVE', },
     )
-
-    def __init__(self, context):
-        try:
-            self.corr_sk = False
-            self.first_expression_set = False
-            self.is_new_rigify_rig = False
-            self.rig_type = 'FACEIT'
-
-        except ReferenceError:
-            pass
+    corr_sk: BoolProperty(
+        default=False,
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
+    first_expression_set: BoolProperty(
+        default=False,
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
+    is_new_rigify_rig: BoolProperty(
+        default=False,
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
+    rig_type: StringProperty(
+        default='FACEIT',
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
     @ classmethod
     def poll(cls, context):
         if context.mode not in ['POSE', 'OBJECT']:
@@ -686,6 +724,9 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
 
     def execute(self, context):
         scene = context.scene
+        rig = futils.get_faceit_armature()
+        self.rig_type = futils.get_rig_type(rig) or 'FACEIT'
+        self.is_new_rigify_rig = self.rig_type == 'RIGIFY_NEW'
         save_frame = scene.frame_current
         state_dict = futils.save_scene_state(context)
         if self.load_custom_path:
@@ -703,7 +744,6 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
         warnings = False
         if futils.get_object_mode_from_context_mode(context.mode) != 'OBJECT' and context.object is not None:
             bpy.ops.object.mode_set()
-        rig = futils.get_faceit_armature()
         if not rig.animation_data:
             rig.animation_data_create()
         ow_action = bpy.data.actions.get("overwrite_shape_action")
@@ -729,9 +769,7 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
                 ow_action = None
         # Reset all bone transforms!
         futils.set_active_object(rig.name)
-        layer_state = rig.data.layers[:]
-        for i, _ in enumerate(rig.data.layers):
-            rig.data.layers[i] = True
+        layer_state = _show_all_armature_layers(rig)
         bpy.ops.object.mode_set(mode='POSE')
         bpy.ops.pose.select_all(action='SELECT')
         bpy.ops.pose.transforms_clear()
@@ -1071,7 +1109,7 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
                 is_new_rigify_rig=self.is_new_rigify_rig
             )
         bpy.ops.faceit.force_zero_frames('EXEC_DEFAULT')
-        rig.data.layers = layer_state[:]
+        _restore_armature_layers(rig, layer_state)
         if warnings:
             self.report(
                 {'WARNING'},
@@ -1123,9 +1161,7 @@ class FACEIT_OT_ForceZeroFrames(bpy.types.Operator):
             futils.clear_object_selection()
             futils.set_active_object(rig.name)
 
-        layer_state = rig.data.layers[:]
-        for i, _ in enumerate(rig.data.layers):
-            rig.data.layers[i] = True
+        layer_state = _show_all_armature_layers(rig)
 
         bpy.ops.object.mode_set(mode='POSE')
 
@@ -1142,16 +1178,18 @@ class FACEIT_OT_ForceZeroFrames(bpy.types.Operator):
         scene.frame_set(zero_ref_frame)
 
         for pb in rig.pose.bones:
-            layers = pb.bone.layers
-            if layers[0] or layers[1] or layers[2]:
+            if _is_faceit_primary_bone_layer(pb.bone):
                 pb.bone.select = True
             else:
                 pb.bone.select = False
 
         bpy.ops.pose.transforms_clear()
-        bpy.ops.anim.keyframe_insert(type="Location")
-        bpy.ops.anim.keyframe_insert(type="Rotation")
-        bpy.ops.anim.keyframe_insert(type="Scaling")
+        for pb in rig.pose.bones:
+            if not pb.bone.select:
+                continue
+            pb.keyframe_insert(data_path="location")
+            pb.keyframe_insert(data_path=a_utils.get_data_path_from_rotation_mode(a_utils.get_rotation_mode(pb)))
+            pb.keyframe_insert(data_path="scale")
 
         bpy.ops.object.mode_set()
 
@@ -1174,7 +1212,7 @@ class FACEIT_OT_ForceZeroFrames(bpy.types.Operator):
             fc.update()
         scene.frame_current = save_frame
         bpy.ops.pose.select_all(action='DESELECT')
-        rig.data.layers = layer_state[:]
+        _restore_armature_layers(rig, layer_state)
         futils.restore_scene_state(context, state_dict)
 
         return {'FINISHED'}
@@ -1225,9 +1263,7 @@ class FACEIT_OT_ExportExpressionsToJson(bpy.types.Operator, ExportHelper):
                 bpy.ops.object.mode_set()
             futils.clear_object_selection()
             futils.set_active_object(rig.name)
-        layer_state = rig.data.layers[:]
-        for i, _ in enumerate(rig.data.layers):
-            rig.data.layers[i] = True
+        layer_state = _show_all_armature_layers(rig)
         bpy.ops.object.mode_set(mode='POSE')
         bpy.ops.pose.select_all(action='SELECT')
         bpy.ops.pose.transforms_clear()
@@ -1236,7 +1272,7 @@ class FACEIT_OT_ExportExpressionsToJson(bpy.types.Operator, ExportHelper):
             bpy.ops.object.mode_set(mode=mode_save)
         except TypeError:
             print(f"Can't activate mode {mode_save} from current context")
-        rig.data.layers = layer_state[:]
+        _restore_armature_layers(rig, layer_state)
         action_scale = list(rig.dimensions.copy())
         eye_dim_L, eye_dim_R = a_utils.get_eye_dimensions(rig)
         action = rig.animation_data.action
@@ -1721,9 +1757,7 @@ class FACEIT_OT_MirrorOverwriteAnimation(bpy.types.Operator):
         auto_key = scene.tool_settings.use_keyframe_insert_auto
         scene.tool_settings.use_keyframe_insert_auto = True
 
-        layer_state = rig.data.layers[:]
-        for i, _ in enumerate(rig.data.layers):
-            rig.data.layers[i] = True
+        layer_state = _show_all_armature_layers(rig)
         for exp in expressions_to_mirror:
 
             scene.frame_set(exp.frame)
@@ -1749,7 +1783,7 @@ class FACEIT_OT_MirrorOverwriteAnimation(bpy.types.Operator):
 
                 scene.faceit_expression_list_index = mirror_expression_idx
 
-        rig.data.layers = layer_state[:]
+        _restore_armature_layers(rig, layer_state)
 
         scene.tool_settings.use_keyframe_insert_auto = auto_key
 
