@@ -517,7 +517,15 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_face_objects
-    del Scene.faceit_subscribed
-    del Scene.faceit_face_index
-    del Scene.faceit_show_warnings
+    if hasattr(Scene, 'faceit_face_objects'):
+
+        del Scene.faceit_face_objects
+    if hasattr(Scene, 'faceit_subscribed'):
+
+        del Scene.faceit_subscribed
+    if hasattr(Scene, 'faceit_face_index'):
+
+        del Scene.faceit_face_index
+    if hasattr(Scene, 'faceit_show_warnings'):
+
+        del Scene.faceit_show_warnings

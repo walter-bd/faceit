@@ -16,6 +16,12 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_weights_restorable
-    del Scene.faceit_expressions_restorable
-    del Scene.faceit_corrective_sk_restorable
+    if hasattr(Scene, 'faceit_weights_restorable'):
+
+        del Scene.faceit_weights_restorable
+    if hasattr(Scene, 'faceit_expressions_restorable'):
+
+        del Scene.faceit_expressions_restorable
+    if hasattr(Scene, 'faceit_corrective_sk_restorable'):
+
+        del Scene.faceit_corrective_sk_restorable

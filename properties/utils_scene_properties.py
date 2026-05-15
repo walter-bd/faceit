@@ -56,5 +56,9 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_shape_key_slider_min
-    del Scene.faceit_shape_key_slider_max
+    if hasattr(Scene, 'faceit_shape_key_slider_min'):
+
+        del Scene.faceit_shape_key_slider_min
+    if hasattr(Scene, 'faceit_shape_key_slider_max'):
+
+        del Scene.faceit_shape_key_slider_max

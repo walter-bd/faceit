@@ -151,9 +151,21 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_armature
-    del Scene.faceit_body_armature_head_bone
-    del Scene.faceit_eye_pivot_options
-    del Scene.faceit_anime_ref_eyebone_l
-    del Scene.faceit_anime_ref_eyebone_r
-    del Scene.faceit_use_rigify_armature
+    if hasattr(Scene, 'faceit_armature'):
+
+        del Scene.faceit_armature
+    if hasattr(Scene, 'faceit_body_armature_head_bone'):
+
+        del Scene.faceit_body_armature_head_bone
+    if hasattr(Scene, 'faceit_eye_pivot_options'):
+
+        del Scene.faceit_eye_pivot_options
+    if hasattr(Scene, 'faceit_anime_ref_eyebone_l'):
+
+        del Scene.faceit_anime_ref_eyebone_l
+    if hasattr(Scene, 'faceit_anime_ref_eyebone_r'):
+
+        del Scene.faceit_anime_ref_eyebone_r
+    if hasattr(Scene, 'faceit_use_rigify_armature'):
+
+        del Scene.faceit_use_rigify_armature

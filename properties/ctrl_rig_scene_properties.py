@@ -244,14 +244,35 @@ def register():
 
 def unregister():
 
-    del Scene.faceit_draw_handler_name
-    del Scene.faceit_control_armature
+    if hasattr(Scene, 'faceit_draw_handler_name'):
 
-    del Scene.faceit_crig_targets
-    del Scene.faceit_crig_targets_index
-    del Scene.faceit_new_slider
 
-    del Object.faceit_crig_targets
-    del Object.faceit_crig_objects_index
-    del Object.faceit_crig_objects
-    del Object.faceit_crig_face_regions
+        del Scene.faceit_draw_handler_name
+    if hasattr(Scene, 'faceit_control_armature'):
+
+        del Scene.faceit_control_armature
+
+    if hasattr(Scene, 'faceit_crig_targets'):
+
+
+        del Scene.faceit_crig_targets
+    if hasattr(Scene, 'faceit_crig_targets_index'):
+
+        del Scene.faceit_crig_targets_index
+    if hasattr(Scene, 'faceit_new_slider'):
+
+        del Scene.faceit_new_slider
+
+    if hasattr(Object, 'faceit_crig_targets'):
+
+
+        del Object.faceit_crig_targets
+    if hasattr(Object, 'faceit_crig_objects_index'):
+
+        del Object.faceit_crig_objects_index
+    if hasattr(Object, 'faceit_crig_objects'):
+
+        del Object.faceit_crig_objects
+    if hasattr(Object, 'faceit_crig_face_regions'):
+
+        del Object.faceit_crig_face_regions

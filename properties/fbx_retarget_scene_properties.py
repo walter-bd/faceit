@@ -106,4 +106,6 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_retarget_fbx_mapping
+    if hasattr(Scene, 'faceit_retarget_fbx_mapping'):
+
+        del Scene.faceit_retarget_fbx_mapping

@@ -15,4 +15,6 @@ Use the manual Mirror tools instead of the Mirror modifier',
 
 
 def unregister():
-    del Scene.faceit_asymmetric
+    if hasattr(Scene, 'faceit_asymmetric'):
+
+        del Scene.faceit_asymmetric

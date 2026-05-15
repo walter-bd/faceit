@@ -96,9 +96,21 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_face_regions
-    del Scene.faceit_arkit_retarget_shapes
-    del Scene.faceit_arkit_retarget_shapes_index
-    del Scene.faceit_a2f_retarget_shapes
-    del Scene.faceit_a2f_retarget_shapes_index
-    del Scene.faceit_retargeting_naming_scheme
+    if hasattr(Scene, 'faceit_face_regions'):
+
+        del Scene.faceit_face_regions
+    if hasattr(Scene, 'faceit_arkit_retarget_shapes'):
+
+        del Scene.faceit_arkit_retarget_shapes
+    if hasattr(Scene, 'faceit_arkit_retarget_shapes_index'):
+
+        del Scene.faceit_arkit_retarget_shapes_index
+    if hasattr(Scene, 'faceit_a2f_retarget_shapes'):
+
+        del Scene.faceit_a2f_retarget_shapes
+    if hasattr(Scene, 'faceit_a2f_retarget_shapes_index'):
+
+        del Scene.faceit_a2f_retarget_shapes_index
+    if hasattr(Scene, 'faceit_retargeting_naming_scheme'):
+
+        del Scene.faceit_retargeting_naming_scheme

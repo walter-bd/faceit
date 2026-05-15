@@ -161,8 +161,18 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_expression_list_index
-    del Scene.faceit_expression_list
-    del Scene.faceit_use_corrective_shapes
-    del Scene.faceit_try_mirror_corrective_shapes
-    del Scene.faceit_use_auto_mirror_x
+    if hasattr(Scene, 'faceit_expression_list_index'):
+
+        del Scene.faceit_expression_list_index
+    if hasattr(Scene, 'faceit_expression_list'):
+
+        del Scene.faceit_expression_list
+    if hasattr(Scene, 'faceit_use_corrective_shapes'):
+
+        del Scene.faceit_use_corrective_shapes
+    if hasattr(Scene, 'faceit_try_mirror_corrective_shapes'):
+
+        del Scene.faceit_try_mirror_corrective_shapes
+    if hasattr(Scene, 'faceit_use_auto_mirror_x'):
+
+        del Scene.faceit_use_auto_mirror_x

@@ -146,6 +146,12 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_workspace
-    del Scene.faceit_expression_init_expand_ui
-    del Scene.faceit_pin_panels
+    if hasattr(Scene, 'faceit_workspace'):
+
+        del Scene.faceit_workspace
+    if hasattr(Scene, 'faceit_expression_init_expand_ui'):
+
+        del Scene.faceit_expression_init_expand_ui
+    if hasattr(Scene, 'faceit_pin_panels'):
+
+        del Scene.faceit_pin_panels
