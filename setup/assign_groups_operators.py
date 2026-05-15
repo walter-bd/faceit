@@ -297,12 +297,11 @@ class FACEIT_OT_AssignMain(bpy.types.Operator):
     bl_label = 'Assign Main Vertex Group'
     bl_options = {'UNDO', 'INTERNAL'}
 
-    def __init__(self, context):
-        try:
-            self.mode_save = 'OBJECT'
-
-        except ReferenceError:
-            pass
+    mode_save: bpy.props.StringProperty(
+        name="Mode",
+        default='OBJECT',
+        options={'SKIP_SAVE'},
+    )
     @ classmethod
     def description(self, context, properties):
         _doc_string = "Works different in Edit / Object Mode.\n"
