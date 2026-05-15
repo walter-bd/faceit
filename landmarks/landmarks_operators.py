@@ -21,6 +21,14 @@ from ..core import vgroup_utils as vg_utils
 from ..rigging import rig_utils
 
 
+def _set_snap_to_face(tool_settings):
+    tool_settings.use_snap = True
+    tool_settings.snap_elements = {'FACE'}
+    tool_settings.snap_target = 'CLOSEST'
+    if hasattr(tool_settings, "use_snap_project"):
+        tool_settings.use_snap_project = True
+
+
 class FACEIT_OT_FacialLandmarks(bpy.types.Operator):
     '''Place the facial landmarks. 1. Match Chin Position, 2. Match Eye Height, 3. Match Jaw Width'''
     bl_idname = 'faceit.facial_landmarks'
@@ -453,10 +461,7 @@ class FACEIT_OT_ProjectLandmarks(bpy.types.Operator):
         obj_origin = lm_obj.matrix_world @ lm_obj.data.vertices[chin_vert].co
         context.scene.cursor.location = obj_origin
         # bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
-        scene.tool_settings.use_snap = True
-        scene.tool_settings.snap_elements = {'FACE'}
-        scene.tool_settings.snap_target = 'CLOSEST'
-        scene.tool_settings.use_snap_project = True
+        _set_snap_to_face(scene.tool_settings)
 
         # get vert positions after projecting
         vert_pos_after = [Vector(round(x, 3) for x in v.co) for v in lm_obj.data.vertices]
@@ -614,10 +619,7 @@ class FACEIT_OT_ResetSnapSettings(bpy.types.Operator):
 
     def execute(self, context):
         scene = context.scene
-        scene.tool_settings.use_snap = True
-        scene.tool_settings.snap_elements = {'FACE'}
-        scene.tool_settings.snap_target = 'CLOSEST'
-        scene.tool_settings.use_snap_project = True
+        _set_snap_to_face(scene.tool_settings)
         return {'FINISHED'}
 
 
