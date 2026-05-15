@@ -60,25 +60,28 @@ class FACEIT_OT_AssignMainModal(bpy.types.Operator):
     bl_options = {'UNDO', 'INTERNAL'}
 
     def __init__(self, context):
-        self._handler = None
-        self._blf_handler = None
-        self.dg = None
-        self.obj = None
-        self.bm = None
-        self.mat = None
-        self.vert_data = None
-        self.indices = None
-        self.vertex_colors = None
-        self.is_faceit_obj = False
-        self.obj_data_dict = {}
-        self.island_ids = None
-        self.geo_islands = None
-        self.single_island = False
-        self.cursor_pos = (0, 0)
-        self.txt = "Assign Face."
-        self.simplify_count = 0
-        self.simplify_state = False
+        try:
+            self._handler = None
+            self._blf_handler = None
+            self.dg = None
+            self.obj = None
+            self.bm = None
+            self.mat = None
+            self.vert_data = None
+            self.indices = None
+            self.vertex_colors = None
+            self.is_faceit_obj = False
+            self.obj_data_dict = {}
+            self.island_ids = None
+            self.geo_islands = None
+            self.single_island = False
+            self.cursor_pos = (0, 0)
+            self.txt = "Assign Face."
+            self.simplify_count = 0
+            self.simplify_state = False
 
+        except ReferenceError:
+            pass
     @classmethod
     def poll(cls, context):
         return (context.mode in ('OBJECT', ))  # 'EDIT_MESH'
@@ -295,8 +298,11 @@ class FACEIT_OT_AssignMain(bpy.types.Operator):
     bl_options = {'UNDO', 'INTERNAL'}
 
     def __init__(self, context):
-        self.mode_save = 'OBJECT'
+        try:
+            self.mode_save = 'OBJECT'
 
+        except ReferenceError:
+            pass
     @ classmethod
     def description(self, context, properties):
         _doc_string = "Works different in Edit / Object Mode.\n"
@@ -468,16 +474,19 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
     )
 
     def __init__(self, context):
-        global initial_selection, vertices_already_in_group
-        # True when any of the faceit vertex groups is assigned to the vertex selection.
-        self.faceit_group_in_selection = False
-        # Groups that are already assigned to the selection.
-        self.faceit_groups_in_selection = []
-        self.mode_save = 'OBJECT'
-        # The selected vertices (indices).
-        initial_selection = []
-        vertices_already_in_group = []
+        try:
+            global initial_selection, vertices_already_in_group
+            # True when any of the faceit vertex groups is assigned to the vertex selection.
+            self.faceit_group_in_selection = False
+            # Groups that are already assigned to the selection.
+            self.faceit_groups_in_selection = []
+            self.mode_save = 'OBJECT'
+            # The selected vertices (indices).
+            initial_selection = []
+            vertices_already_in_group = []
 
+        except ReferenceError:
+            pass
     @ classmethod
     def description(self, context, properties):
         _doc_string = "Works different in Edit / Object Mode.\n"
@@ -866,13 +875,16 @@ class FACEIT_OT_DrawFaceitVertexGroup(bpy.types.Operator):
     )
 
     def __init__(self, context):
-        self._handler = None
-        self._blf_handler = None
-        self.dg = None
-        self.vert_data = None
-        self.indices = None
-        self.bm = None
+        try:
+            self._handler = None
+            self._blf_handler = None
+            self.dg = None
+            self.vert_data = None
+            self.indices = None
+            self.bm = None
 
+        except ReferenceError:
+            pass
     @classmethod
     def poll(cls, context):
         return (context.mode in ('OBJECT', 'EDIT_MESH'))  # 'EDIT_MESH'
@@ -1058,8 +1070,11 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
     mask_all: bpy.props.BoolProperty()
 
     def __init__(self, context):
-        self.grp_prop = None
+        try:
+            self.grp_prop = None
 
+        except ReferenceError:
+            pass
     @classmethod
     def poll(cls, context):
         return True

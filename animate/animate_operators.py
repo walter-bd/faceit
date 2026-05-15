@@ -614,11 +614,14 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
     )
 
     def __init__(self, context):
-        self.corr_sk = False
-        self.first_expression_set = False
-        self.is_new_rigify_rig = False
-        self.rig_type = 'FACEIT'
+        try:
+            self.corr_sk = False
+            self.first_expression_set = False
+            self.is_new_rigify_rig = False
+            self.rig_type = 'FACEIT'
 
+        except ReferenceError:
+            pass
     @ classmethod
     def poll(cls, context):
         if context.mode not in ['POSE', 'OBJECT']:
