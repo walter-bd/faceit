@@ -1,3 +1,6 @@
+# Copyright (C) 2025 wben
+# Modified to guard property deletions in unregister
+
 
 
 from bpy.types import Scene

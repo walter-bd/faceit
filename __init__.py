@@ -1,8 +1,10 @@
 '''
 Copyright (C) 2020 Fynn Braren
+Copyright (C) 2025 wben
 fynn.braren@posteo.de
 
 Created by Fynn Braren
+Modified by wben
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

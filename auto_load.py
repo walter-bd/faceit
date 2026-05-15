@@ -1,4 +1,6 @@
 # by JacquesLucke / Animation Nodes
+# Copyright (C) 2025 wben - Added error handling for unregister
+
 import bpy
 import typing
 import inspect

@@ -1,3 +1,6 @@
+# Copyright (C) 2025 wben
+# Modified for Blender 4.5.5 compatibility
+
 import bpy
 from bpy.props import BoolProperty, EnumProperty, PointerProperty, StringProperty, IntProperty, FloatProperty, CollectionProperty
 from bpy.types import PropertyGroup, Scene, Object, Action

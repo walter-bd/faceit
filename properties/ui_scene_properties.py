@@ -1,3 +1,6 @@
+# Copyright (C) 2025 wben
+# Modified to guard property deletions in unregister
+
 from bpy.props import (BoolProperty, EnumProperty, PointerProperty,
                        StringProperty)
 from bpy.types import PropertyGroup, Scene

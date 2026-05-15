@@ -1,3 +1,6 @@
+# Copyright (C) 2025 wben
+# Modified to guard property deletions in unregister
+
 import bpy
 from bpy.props import (BoolProperty, CollectionProperty, EnumProperty,
                        IntProperty, PointerProperty, StringProperty)
