@@ -217,7 +217,7 @@ class FACEIT_PT_LandmarkHelpers(FACEIT_PT_BaseSub, bpy.types.Panel):
         row.label(text="Settings")
         if adaption_state in range(0, 4):
             row = col.row(align=True)
-            prefs = context.preferences.addons['faceit'].preferences
+            prefs = futils.get_addon_preferences(context)
             row.prop(prefs, "auto_lock_3d_view", icon='RESTRICT_VIEW_ON')
             if futils.get_any_view_locked():
                 row = col.row(align=True)
@@ -245,7 +245,7 @@ class FACEIT_OT_LandmarkVertexSize(bpy.types.Operator):
 
     def draw(self, context):
         col = self.layout.column(align=True)
-        prefs = context.preferences.addons['faceit'].preferences
+        prefs = futils.get_addon_preferences(context)
 
         row = col.row(align=True)
         context.preferences.themes[0].view_3d.vertex_size

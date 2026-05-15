@@ -13,6 +13,7 @@ from ..ctrl_rig.custom_slider_utils import get_custom_sliders_from_faceit_object
 from ..ctrl_rig.control_rig_utils import get_crig_objects_list, get_slider_bone_name_from_arkit_driver_dict
 from ..core.shape_key_utils import set_slider_max
 from ..core.retarget_list_utils import get_index_of_collection_item, get_target_shape_keys
+from ..core import faceit_utils as futils
 
 
 def is_armature_object(self, obj):
@@ -38,7 +39,7 @@ class Target_Objects(PropertyGroup):
 
 def update_shape_key_ranges_based_on_amplify(self, context):
     '''Update the shape key ranges based on the amplify value'''
-    if not bpy.context.preferences.addons["faceit"].preferences.dynamic_shape_key_ranges:
+    if not futils.get_addon_preferences(context).dynamic_shape_key_ranges:
         return
     ctrl_rig = context.scene.faceit_control_armature
     target_sk = get_target_shape_keys(self, objects=get_crig_objects_list(ctrl_rig))

@@ -5,6 +5,21 @@ from mathutils import Vector
 from .faceit_data import FACEIT_BONES
 
 
+def get_addon_preferences(context=None):
+    """Return FaceIt preferences regardless of install folder name."""
+    if context is None:
+        context = bpy.context
+    addons = context.preferences.addons
+    for addon_name in (__package__.split('.')[0], 'faceit', 'faceit-master'):
+        addon = addons.get(addon_name)
+        if addon:
+            return addon.preferences
+    for addon_name, addon in addons.items():
+        if addon_name.startswith('faceit'):
+            return addon.preferences
+    return None
+
+
 def get_action_frame_range(action):
     if bpy.app.version <= (3, 1, 0):
         frame_range = action.frame_range

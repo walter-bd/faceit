@@ -5,6 +5,7 @@ from mathutils import Vector
 
 from .ui import FACEIT_PT_Base
 from ..core.retarget_list_utils import get_index_of_parent_collection_item
+from ..core import faceit_utils as futils
 from ..core.faceit_utils import get_faceit_armature, using_rigify_armature
 from ..panels.draw_utils import draw_text_block
 
@@ -84,9 +85,9 @@ class FACEIT_PT_ShapeKeyUtils(FACEIT_PT_BaseBake, Panel):
         scene = context.scene
         col = layout.column()
         row = col.row(align=True)
-        row.prop(context.preferences.addons["faceit"].preferences, 'dynamic_shape_key_ranges', icon='SHAPEKEY_DATA')
+        row.prop(futils.get_addon_preferences(context), 'dynamic_shape_key_ranges', icon='SHAPEKEY_DATA')
 
-        if not context.preferences.addons["faceit"].preferences.dynamic_shape_key_ranges:
+        if not futils.get_addon_preferences(context).dynamic_shape_key_ranges:
             row = col.row(align=True)
             row.label(text='Set Shape Key Slider Range')
 

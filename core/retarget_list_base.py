@@ -15,6 +15,7 @@ from .retarget_list_utils import (are_target_shapes_valid, get_index_of_collecti
                                   get_invalid_target_shapes)
 from .shape_key_utils import (get_shape_key_names_from_objects,
                               get_shape_keys_from_faceit_objects_enum, set_slider_max)
+from ..core import faceit_utils as futils
 from ..core.faceit_utils import get_faceit_objects_list
 
 
@@ -28,7 +29,7 @@ class TargetShapes(PropertyGroup):
 
 def update_shape_key_ranges_based_on_amplify(self, context):
     '''Update the shape key ranges based on the amplify value'''
-    if not bpy.context.preferences.addons["faceit"].preferences.dynamic_shape_key_ranges:
+    if not futils.get_addon_preferences(context).dynamic_shape_key_ranges:
         return
     target_sk = get_target_shape_keys(self, objects=get_faceit_objects_list())
     id_data = self.id_data

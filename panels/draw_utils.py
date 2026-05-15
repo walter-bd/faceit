@@ -2,10 +2,13 @@ import bpy
 from bpy.types import UILayout
 import textwrap
 
+from ..core import faceit_utils as futils
+
 
 def draw_web_link(layout, link, text_ui='', show_always=False):
     '''Draws a Web @link in the given @layout. Optionally with plain @text_ui'''
-    if bpy.context.preferences.addons['faceit'].preferences.web_links or show_always:
+    prefs = futils.get_addon_preferences()
+    if show_always or prefs is None or prefs.web_links:
         web = layout.operator('faceit.open_web', text=text_ui, icon='QUESTION')
         web.link = link
 

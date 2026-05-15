@@ -153,7 +153,7 @@ class MocapBase:
                         shape_key = keys.get(ts.name)
                         if shape_key:
                             self.target_shapes_dict[shape_item.name].append(shape_key)
-        self.dynamic_sk_ranges = bpy.context.preferences.addons["faceit"].preferences.dynamic_shape_key_ranges
+        self.dynamic_sk_ranges = futils.get_addon_preferences(bpy.context).dynamic_shape_key_ranges
 
     def normalizeAngle(self, angle):
         """

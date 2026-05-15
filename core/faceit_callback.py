@@ -1,5 +1,6 @@
 import bpy
 from ..landmarks.landmarks_utils import unlock_3d_view
+from . import faceit_utils as futils
 
 
 class FACEIT_OT_SubscribeSettings(bpy.types.Operator):
@@ -49,7 +50,7 @@ def msgbus(self, context):
 
 def faceit_switch_modes_callback(context):
     '''Runs when the object mode changes'''
-    if context.preferences.addons['faceit'].preferences.auto_lock_3d_view:
+    if futils.get_addon_preferences(context).auto_lock_3d_view:
         obj = context.object
         if obj is None:
             return
@@ -69,11 +70,11 @@ def faceit_active_object_callback(context):
     if active_object is None:
         return
     if active_object.name == "facial_landmarks":
-        if bpy.context.preferences.addons["faceit"].preferences.use_vertex_size_scaling:
-            bpy.context.preferences.themes[0].view_3d.vertex_size = bpy.context.preferences.addons["faceit"].preferences.landmarks_vertex_size
+        if futils.get_addon_preferences(context).use_vertex_size_scaling:
+            bpy.context.preferences.themes[0].view_3d.vertex_size = futils.get_addon_preferences(context).landmarks_vertex_size
     else:
-        if bpy.context.preferences.addons["faceit"].preferences.use_vertex_size_scaling:
-            bpy.context.preferences.themes[0].view_3d.vertex_size = bpy.context.preferences.addons["faceit"].preferences.default_vertex_size
+        if futils.get_addon_preferences(context).use_vertex_size_scaling:
+            bpy.context.preferences.themes[0].view_3d.vertex_size = futils.get_addon_preferences(context).default_vertex_size
     # set the active control rig
     # NID, this sets the active control rig on active object change, which is kinda annoying.
     # NID, xiaohua's face rig is a little in compatible with FaceIt's Contrl Rig Panel, and it doesn't need faceit_control_armature to be set to work.
