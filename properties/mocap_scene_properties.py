@@ -256,17 +256,29 @@ def register():
 
 
 def unregister():
-    del Scene.faceit_mocap_action
-    del Scene.faceit_bake_sk_to_crig_action
-    del Scene.faceit_record_face_cap
-    if SoundSequence is not None:
+    if hasattr(Scene, 'faceit_mocap_action'):
+        del Scene.faceit_mocap_action
+    if hasattr(Scene, 'faceit_bake_sk_to_crig_action'):
+        del Scene.faceit_bake_sk_to_crig_action
+    if hasattr(Scene, 'faceit_record_face_cap'):
+        del Scene.faceit_record_face_cap
+    if SoundSequence is not None and hasattr(SoundSequence, 'faceit_audio'):
         del SoundSequence.faceit_audio
-    del Scene.faceit_osc_receiver_enabled
-    del Scene.faceit_osc_face_regions
-    del Scene.faceit_osc_animate_head_rotation
-    del Scene.faceit_osc_animate_head_location
-    del Scene.faceit_osc_head_location_multiplier
-    del Scene.faceit_osc_rotation_units
-    del Scene.faceit_head_target_object
-    del Scene.faceit_head_sub_target
-    del Scene.faceit_auto_disconnect_ctrl_rig
+    if hasattr(Scene, 'faceit_osc_receiver_enabled'):
+        del Scene.faceit_osc_receiver_enabled
+    if hasattr(Scene, 'faceit_osc_face_regions'):
+        del Scene.faceit_osc_face_regions
+    if hasattr(Scene, 'faceit_osc_animate_head_rotation'):
+        del Scene.faceit_osc_animate_head_rotation
+    if hasattr(Scene, 'faceit_osc_animate_head_location'):
+        del Scene.faceit_osc_animate_head_location
+    if hasattr(Scene, 'faceit_osc_head_location_multiplier'):
+        del Scene.faceit_osc_head_location_multiplier
+    if hasattr(Scene, 'faceit_osc_rotation_units'):
+        del Scene.faceit_osc_rotation_units
+    if hasattr(Scene, 'faceit_head_target_object'):
+        del Scene.faceit_head_target_object
+    if hasattr(Scene, 'faceit_head_sub_target'):
+        del Scene.faceit_head_sub_target
+    if hasattr(Scene, 'faceit_auto_disconnect_ctrl_rig'):
+        del Scene.faceit_auto_disconnect_ctrl_rig
