@@ -1,6 +1,11 @@
 import bpy
 from bpy.props import BoolProperty, EnumProperty, PointerProperty, StringProperty, IntProperty, FloatProperty, CollectionProperty
-from bpy.types import PropertyGroup, Scene, SoundSequence, Object, Action
+from bpy.types import PropertyGroup, Scene, Object, Action
+
+try:
+    from bpy.types import SoundSequence
+except ImportError:
+    SoundSequence = None
 
 from ..core.retarget_list_base import FaceRegionsBase
 
@@ -177,11 +182,12 @@ def register():
         description='Record on Play - Setup AddRoutes first'
     )
 
-    SoundSequence.faceit_audio = BoolProperty(
-        name='Faceit Audio',
-        description='Whether this is a Faceit audio sequence',
-        default=False
-    )
+    if SoundSequence is not None:
+        SoundSequence.faceit_audio = BoolProperty(
+            name='Faceit Audio',
+            description='Whether this is a Faceit audio sequence',
+            default=False
+        )
 
     ############## OSC #####################
 
@@ -253,7 +259,8 @@ def unregister():
     del Scene.faceit_mocap_action
     del Scene.faceit_bake_sk_to_crig_action
     del Scene.faceit_record_face_cap
-    del SoundSequence.faceit_audio
+    if SoundSequence is not None:
+        del SoundSequence.faceit_audio
     del Scene.faceit_osc_receiver_enabled
     del Scene.faceit_osc_face_regions
     del Scene.faceit_osc_animate_head_rotation
