@@ -613,7 +613,7 @@ class FACEIT_OT_AppendActionToFaceitRig(bpy.types.Operator):
         options={'SKIP_SAVE', },
     )
 
-    def __init__(self):
+    def __init__(self, context):
         self.corr_sk = False
         self.first_expression_set = False
         self.is_new_rigify_rig = False

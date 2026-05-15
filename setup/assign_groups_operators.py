@@ -59,7 +59,7 @@ class FACEIT_OT_AssignMainModal(bpy.types.Operator):
     bl_label = 'Assign Main Vertex Group'
     bl_options = {'UNDO', 'INTERNAL'}
 
-    def __init__(self):
+    def __init__(self, context):
         self._handler = None
         self._blf_handler = None
         self.dg = None
@@ -294,7 +294,7 @@ class FACEIT_OT_AssignMain(bpy.types.Operator):
     bl_label = 'Assign Main Vertex Group'
     bl_options = {'UNDO', 'INTERNAL'}
 
-    def __init__(self):
+    def __init__(self, context):
         self.mode_save = 'OBJECT'
 
     @ classmethod
@@ -467,7 +467,7 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
         options={'SKIP_SAVE'},
     )
 
-    def __init__(self):
+    def __init__(self, context):
         global initial_selection, vertices_already_in_group
         # True when any of the faceit vertex groups is assigned to the vertex selection.
         self.faceit_group_in_selection = False
@@ -865,7 +865,7 @@ class FACEIT_OT_DrawFaceitVertexGroup(bpy.types.Operator):
         options={'SKIP_SAVE'}
     )
 
-    def __init__(self):
+    def __init__(self, context):
         self._handler = None
         self._blf_handler = None
         self.dg = None
@@ -1057,7 +1057,7 @@ class FACEIT_OT_MaskGroup(bpy.types.Operator):
     )
     mask_all: bpy.props.BoolProperty()
 
-    def __init__(self):
+    def __init__(self, context):
         self.grp_prop = None
 
     @classmethod
