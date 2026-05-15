@@ -471,21 +471,16 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
         default=False,
         options={'SKIP_SAVE'},
     )
-
-    def __init__(self, context):
-        try:
-            global initial_selection, vertices_already_in_group
-            # True when any of the faceit vertex groups is assigned to the vertex selection.
-            self.faceit_group_in_selection = False
-            # Groups that are already assigned to the selection.
-            self.faceit_groups_in_selection = []
-            self.mode_save = 'OBJECT'
-            # The selected vertices (indices).
-            initial_selection = []
-            vertices_already_in_group = []
-
-        except ReferenceError:
-            pass
+    mode_save: bpy.props.StringProperty(
+        name="Mode",
+        default='OBJECT',
+        options={'SKIP_SAVE'},
+    )
+    faceit_groups_in_selection: bpy.props.StringProperty(
+        name='Faceit Groups In Selection',
+        default='',
+        options={'SKIP_SAVE'},
+    )
     @ classmethod
     def description(self, context, properties):
         _doc_string = "Works different in Edit / Object Mode.\n"
@@ -531,6 +526,10 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
 
     def invoke(self, context, event):
         global initial_selection, vertices_already_in_group
+        self.vgroup_already_assigned = False
+        self.faceit_groups_in_selection = ''
+        initial_selection = []
+        vertices_already_in_group = []
         if len(context.selected_objects) > 1:
             self.report({'ERROR'}, 'It seems you have more than one object selected. Please select only one object.')
             return {'CANCELLED'}
@@ -573,12 +572,17 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
                 if vgroup_name in ("faceit_left_eyeball", "faceit_right_eyeball",):
                     continue
                 if any((vid in vid_in_vgroup for vid in initial_selection)):  # and vgroup_name != "faceit_main":
-                    self.faceit_groups_in_selection.append(vgroup_name)
+                    group_names = self._get_faceit_groups_in_selection()
+                    group_names.append(vgroup_name)
+                    self.faceit_groups_in_selection = '\n'.join(group_names)
 
-        if self.vgroup_already_assigned or self.faceit_groups_in_selection:
+        if self.vgroup_already_assigned or self._get_faceit_groups_in_selection():
             bpy.ops.object.mode_set(mode=self.mode_save)
             return context.window_manager.invoke_props_dialog(self)
         return self.execute(context)
+
+    def _get_faceit_groups_in_selection(self):
+        return [name for name in self.faceit_groups_in_selection.split('\n') if name]
 
     def draw(self, context):
         layout = self.layout
@@ -588,13 +592,14 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
             box.label(text='"%s" is already assigned.' % self.get_clean_name(self.vertex_group))
             box.label(text='Do you want to overwrite the existing assignment?')
             box.prop(self, 'method', expand=True)
-        if self.faceit_groups_in_selection:
+        groups_in_selection = self._get_faceit_groups_in_selection()
+        if groups_in_selection:
             box = layout.box()
             row = box.row(align=True)
             row.label(text="WARNING", icon='ERROR')
             row = box.row(align=True)
             row.label(text="The following groups will be overwritten:")
-            for grp_name in self.faceit_groups_in_selection:
+            for grp_name in groups_in_selection:
                 box.label(text=self.get_clean_name(grp_name))
 
             # layout.label(text='Warning: Selection already assigned to:')
@@ -618,7 +623,7 @@ class FACEIT_OT_AssignGroup(bpy.types.Operator):
         else:
             v_selected = obj.data.vertices
         # Remove all faceit vertex groups from the active vertex selection
-        for vgroup_name in self.faceit_groups_in_selection:
+        for vgroup_name in self._get_faceit_groups_in_selection():
             vgroup = obj.vertex_groups.get(vgroup_name)
             selected_verts_in_group = [v.index for v in v_selected if vgroup.index in [vg.group for vg in v.groups]]
             vgroup.remove(selected_verts_in_group)
