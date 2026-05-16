@@ -345,8 +345,12 @@ def reorder_armature_in_modifier_stack(obj, arm_mod=None):
         if above_mods:
             # Move it right below other armature mods
             new_idx = max(above_mods)
-            override = {'object': obj, 'active_object': obj}
-            bpy.ops.object.modifier_move_to_index(override, modifier=arm_mod.name, index=new_idx + 1)
+            if bpy.app.version >= (3, 2, 0):
+                with bpy.context.temp_override(object=obj, active_object=obj):
+                    bpy.ops.object.modifier_move_to_index(modifier=arm_mod.name, index=new_idx + 1)
+            else:
+                override = {'object': obj, 'active_object': obj}
+                bpy.ops.object.modifier_move_to_index(override, modifier=arm_mod.name, index=new_idx + 1)
 
 
 def get_modifiers_of_type(obj, type):

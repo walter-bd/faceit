@@ -1290,8 +1290,7 @@ class FACEIT_OT_ExportExpressionsToJson(bpy.types.Operator, ExportHelper):
             }
         rest_pose_dict = {}
         for pb in rig.pose.bones:
-            layers = pb.bone.layers
-            if layers[0] is True or layers[1] is True or layers[2] is True:
+            if _is_faceit_primary_bone_layer(pb.bone):
                 rest_pose_dict[pb.name] = list(pb.bone.matrix_local.translation)
         action_dict = {}
         remove_zero_keyframes = True

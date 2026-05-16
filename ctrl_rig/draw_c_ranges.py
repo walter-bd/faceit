@@ -235,18 +235,7 @@ class FACEIT_OT_DrawCRanges(bpy.types.Operator):
                         else:
                             b_color = b_grp.colors.select[:] + (1.0,)
 
-                    bone_layer_state = bone.bone.layers
-
-                    bone_layer_hidden = False
-
-                    for i, l in enumerate(bone_layer_state):
-                        if l is True and c_rig.data.layers[i] is True:
-                            bone_layer_hidden = False
-                            break
-                        else:
-                            bone_layer_hidden = True
-                            continue
-                    if bone_layer_hidden is True:
+                    if not futils.is_bone_visible(bone.bone, c_rig.data):
                         continue
 
                     vertices_for_current_bone = []

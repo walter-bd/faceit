@@ -114,9 +114,8 @@ def generate_extra_2dslider(slider_name, rig_obj):
     '''Create a 2d slider in the control rig armature'''
     mirror_settings = rig_obj.data.use_mirror_x
     rig_obj.data.use_mirror_x = False
-    layer_state = rig_obj.data.layers[:]
-    for i, _ in enumerate(rig_obj.data.layers):
-        rig_obj.data.layers[i] = True
+    layer_state = futils.get_armature_layer_state(rig_obj.data)
+    futils.enable_all_armature_layers(rig_obj.data)
     bpy.ops.object.mode_set(mode='EDIT')
     ref_slider_parent_bone = rig_obj.data.edit_bones.get('c_slider2d_ref_parent')
     # init_pos = ref_slider_parent_bone.head.copy()
@@ -133,7 +132,7 @@ def generate_extra_2dslider(slider_name, rig_obj):
         new_bone.matrix = bone.matrix
         new_bone.parent = bone.parent
         if bone_layers:
-            new_bone.layers = bone_layers
+            futils.set_bone_layers_list(new_bone, bone_layers)
         return new_bone
 
     edit_bones = rig_obj.data.edit_bones
@@ -147,8 +146,8 @@ def generate_extra_2dslider(slider_name, rig_obj):
         new_sliders.append(duplicate_edit_bone(ref_slider, new_slider_name, bone_layers=layers))
         
     bpy.ops.object.mode_set(mode='OBJECT')
-    rig_obj.data.layers = layer_state[:]
-    rig_obj.data.layers[2] = True
+    futils.restore_armature_layer_state(rig_obj.data, layer_state)
+    futils.set_armature_layer(rig_obj.data, 2, True)
     rig_obj.data.use_mirror_x = mirror_settings
 
     for ref_slider_name, new_slider_name in ref_bone_slider_dict.items():
@@ -177,9 +176,8 @@ def generate_extra_sliders(context, shape_name, slider_range, rig_obj, max_rows=
     """
     mirror_settings = rig_obj.data.use_mirror_x
     rig_obj.data.use_mirror_x = False
-    layer_state = rig_obj.data.layers[:]
-    for i in range(len(rig_obj.data.layers)):
-        rig_obj.data.layers[i] = True
+    layer_state = futils.get_armature_layer_state(rig_obj.data)
+    futils.enable_all_armature_layers(rig_obj.data)
     slider_existing_already = get_all_slider_bones(rig_obj, only_controllers=True)
     bpy.ops.object.mode_set(mode='EDIT')
     ref_slider_parent_bone = rig_obj.data.edit_bones.get('c_slider_small_ref_parent')
@@ -256,8 +254,8 @@ def generate_extra_sliders(context, shape_name, slider_range, rig_obj, max_rows=
             # Move the bone
             b.translate(vec)
 
-            b.layers[2] = True
-            b.layers[31] = False
+            futils.assign_bone_to_layer(b, 2, True)
+            futils.assign_bone_to_layer(b, 31, False)
 
         return f'c_{shape_name}_slider'
 
@@ -304,8 +302,8 @@ def generate_extra_sliders(context, shape_name, slider_range, rig_obj, max_rows=
             bone['faceit_slider'] = 1
 
     bpy.ops.object.mode_set(mode='OBJECT')
-    rig_obj.data.layers = layer_state[:]
-    rig_obj.data.layers[2] = True
+    futils.restore_armature_layer_state(rig_obj.data, layer_state)
+    futils.set_armature_layer(rig_obj.data, 2, True)
     rig_obj.data.use_mirror_x = mirror_settings
 
     bone = rig_obj.pose.bones.get(f'c_{shape_name}_slider_txt')

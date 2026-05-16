@@ -157,10 +157,9 @@ class FACEIT_OT_MatchControlRig(bpy.types.Operator):
         use_asymmetry = scene.faceit_asymmetric
         # save Settings
         rig.data.use_mirror_x = False if use_asymmetry else True
-        layer_state = rig.data.layers[:]
+        layer_state = futils.get_armature_layer_state(rig.data)
         # enable all armature layers; needed for armature operators to work properly
-        for i in range(len(rig.data.layers)):
-            rig.data.layers[i] = True
+        futils.enable_all_armature_layers(rig.data)
         edit_bones = rig.data.edit_bones
         # adapt scale
         bpy.ops.object.mode_set(mode='EDIT')
@@ -325,7 +324,7 @@ class FACEIT_OT_MatchControlRig(bpy.types.Operator):
 
         bpy.ops.object.mode_set(mode='POSE')
         # restore the layer visibillity to its original state
-        rig.data.layers = layer_state[:]
+        futils.restore_armature_layer_state(rig.data, layer_state)
         if self.apply_scale:
             for b in rig.pose.bones:
                 for c in b.constraints:

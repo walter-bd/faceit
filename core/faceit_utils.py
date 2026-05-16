@@ -5,6 +5,114 @@ from mathutils import Vector
 from .faceit_data import FACEIT_BONES
 
 
+# ============== Blender 4.x compat: armature.layers -> collections ==============
+
+def armature_has_layers(armature):
+    """Pre-Blender 4.0 uses armature.layers (32-bool list). 4.0+ uses collections."""
+    return hasattr(armature, 'layers')
+
+
+def get_armature_layer_state(armature):
+    """Save layer/collection visibility state. Returns list of bools."""
+    if armature_has_layers(armature):
+        return list(armature.layers)
+    return [c.is_visible for c in armature.collections]
+
+
+def restore_armature_layer_state(armature, state):
+    """Restore previously saved layer/collection state."""
+    if armature_has_layers(armature):
+        for i, s in enumerate(state):
+            armature.layers[i] = s
+        return
+    for c, s in zip(armature.collections, state):
+        c.is_visible = s
+
+
+def enable_all_armature_layers(armature):
+    """Make all layers/collections visible for edit ops."""
+    if armature_has_layers(armature):
+        for i in range(len(armature.layers)):
+            armature.layers[i] = True
+        return
+    for c in armature.collections:
+        c.is_visible = True
+
+
+def set_armature_layer(armature, index, value):
+    """Set specific layer index (3.x) or matching collection by index (4.x)."""
+    if armature_has_layers(armature):
+        armature.layers[index] = value
+        return
+    if 0 <= index < len(armature.collections):
+        armature.collections[index].is_visible = value
+
+
+def get_armature_layer(armature, index):
+    """Get specific layer/collection visibility by index."""
+    if armature_has_layers(armature):
+        return armature.layers[index]
+    if 0 <= index < len(armature.collections):
+        return armature.collections[index].is_visible
+    return False
+
+
+def is_bone_visible(bone, armature=None):
+    """Check if bone is on any visible layer (3.x) or in any visible collection (4.x)."""
+    if hasattr(bone, 'layers'):
+        if armature is None:
+            armature = bone.id_data
+        for i, on_layer in enumerate(bone.layers):
+            if on_layer and armature.layers[i]:
+                return True
+        return False
+    for coll in bone.collections:
+        if coll.is_visible:
+            return True
+    return False
+
+
+def set_bone_layers_list(bone, layers_list):
+    """Assign bone to layers (3.x) or matching named collections (4.x).
+
+    layers_list: 32-bool list, True = bone is on that layer/collection.
+    """
+    if hasattr(bone, 'layers'):
+        bone.layers = layers_list[:]
+        return
+    armature = bone.id_data
+    for i, enabled in enumerate(layers_list):
+        coll_name = f"Layer {i}"
+        coll = armature.collections.get(coll_name)
+        if enabled:
+            if coll is None:
+                coll = armature.collections.new(coll_name)
+            coll.assign(bone)
+        elif coll is not None:
+            coll.unassign(bone)
+
+
+def assign_bone_to_layer(bone, layer_index, value=True):
+    """Assign bone to specific layer (3.x) or named collection (4.x).
+
+    In 4.x, layer indices are mapped to collection names 'Layer N'. Creates
+    the collection on the bone's armature if missing.
+    """
+    if hasattr(bone, 'layers'):
+        bone.layers[layer_index] = value
+        return
+    armature = bone.id_data
+    coll_name = f"Layer {layer_index}"
+    coll = armature.collections.get(coll_name)
+    if value:
+        if coll is None:
+            coll = armature.collections.new(coll_name)
+        coll.assign(bone)
+    else:
+        if coll is not None:
+            coll.unassign(bone)
+
+
 def get_addon_preferences(context=None):
     """Return FaceIt preferences regardless of install folder name."""
     if context is None:

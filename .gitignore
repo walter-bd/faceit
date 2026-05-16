@@ -2,3 +2,4 @@
 mocap/__pycache__/
 
 *.pyc
+.claude/

@@ -174,10 +174,9 @@ class FACEIT_OT_GenerateRig(bpy.types.Operator):
         l_mat = rig.matrix_world.inverted()
 
         # save Settings
-        layer_state = rig.data.layers[:]
+        layer_state = futils.get_armature_layer_state(rig.data)
         # enable all armature layers; needed for armature operators to work properly
-        for i in range(len(rig.data.layers)):
-            rig.data.layers[i] = True
+        futils.enable_all_armature_layers(rig.data)
 
         for i, bone_dict in vert_dict.items():
             target_point = None
@@ -451,7 +450,7 @@ class FACEIT_OT_GenerateRig(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
 
         # restore the layer visibillity to its original state
-        rig.data.layers = layer_state[:]
+        futils.restore_armature_layer_state(rig.data, layer_state)
 
         landmarks.hide_viewport = True
 

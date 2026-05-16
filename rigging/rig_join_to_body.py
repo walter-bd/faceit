@@ -148,7 +148,9 @@ class FACEIT_OT_JoinWithBodyArmature(bpy.types.Operator):
         scene.tool_settings.use_auto_normalize = False
 
         # Combined Rig layer status
-        rig_layers_combined = [a or b for a, b in zip(faceit_rig.data.layers, body_rig.data.layers)]
+        rig_layers_combined = [a or b for a, b in zip(
+            futils.get_armature_layer_state(faceit_rig.data),
+            futils.get_armature_layer_state(body_rig.data))]
         # The Bone Groups from Faceit Rig
         if self.keep_faceit_bone_groups:
             faceit_bone_groups = get_bone_groups_dict(faceit_rig)
@@ -334,8 +336,8 @@ class FACEIT_OT_JoinWithBodyArmature(bpy.types.Operator):
         # Restore rigify naming and layers for face bone
         face_bone.name = 'ORG-face'
         face_bone.use_deform = False
-        face_bone.layers[31] = True
-        face_bone.layers[29] = False
+        futils.assign_bone_to_layer(face_bone, 31, True)
+        futils.assign_bone_to_layer(face_bone, 29, False)
         face_bone.parent = head_bone_edit
         if self.keep_faceit_bone_groups:
             bpy.ops.object.mode_set(mode='POSE')
@@ -365,7 +367,7 @@ class FACEIT_OT_JoinWithBodyArmature(bpy.types.Operator):
                 if c.type == 'COPY_ROTATION':
                     bone.constraints.remove(c)
         bpy.ops.object.mode_set()
-        body_rig.data.layers = rig_layers_combined[:]
+        futils.restore_armature_layer_state(body_rig.data, rig_layers_combined)
         if self.tag_arp_custom:
             all_faceit_bones.append('ORG-face')
             for b in body_rig.pose.bones:

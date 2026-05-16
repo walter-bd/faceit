@@ -312,9 +312,8 @@ class FACEIT_OT_SmartBind(bpy.types.Operator):
         futils.set_hide_obj(rig, False)
         rig.data.pose_position = 'REST'
         # enable all armature layers
-        layer_state = rig.data.layers[:]
-        for i in range(len(rig.data.layers)):
-            rig.data.layers[i] = True
+        layer_state = futils.get_armature_layer_state(rig.data)
+        futils.enable_all_armature_layers(rig.data)
         # --------------- OBJECT & ARMATURE SETTINGS -------------------
         # | - Unhide Objects
         # | - Hide Generators (Modifier)
@@ -525,7 +524,7 @@ class FACEIT_OT_SmartBind(bpy.types.Operator):
             add_faceit_armature_modifier(obj, rig)
         # --------------- RESTORE SETTINGS -------------------
         rig.data.pose_position = 'POSE'
-        rig.data.layers = layer_state[:]
+        futils.restore_armature_layer_state(rig.data, layer_state)
         futils.set_hidden_state_object(lm_obj, True, True)
         scene.tool_settings.transform_pivot_point = pivot_setting
         context.scene.tool_settings.use_auto_normalize = use_auto_normalize
