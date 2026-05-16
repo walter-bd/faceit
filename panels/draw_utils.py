@@ -5,6 +5,12 @@ import textwrap
 from ..core import faceit_utils as futils
 
 
+def draw_panel_dropdown_expander(layout, data, prop_name, text):
+    '''Draw a triangle expander toggle for collapsible panel sections.'''
+    icon = 'TRIA_DOWN' if getattr(data, prop_name, False) else 'TRIA_RIGHT'
+    layout.prop(data, prop_name, text=text, icon=icon, icon_only=True, emboss=False)
+
+
 def draw_web_link(layout, link, text_ui='', show_always=False):
     '''Draws a Web @link in the given @layout. Optionally with plain @text_ui'''
     prefs = futils.get_addon_preferences()
